@@ -9,9 +9,9 @@
             <flux:input label="Member ID" wire:model="form.member_id" />
         @endif
         @if ($form['visit_type'] === 'guest')
-            <flux:input label="Nama Lengkap" wire:model="form.guest_name" />
-            <flux:input label="No. Telepon" wire:model="form.guest_phone" />
-            <flux:input label="No. Identitas (KTP/SIM)" wire:model="form.guest_identity" />
+            <flux:input label="Nama Lengkap" wire:model="form.guest_name"  />
+            <flux:input label="No. Telepon" wire:model="form.guest_phone" type="number"/>
+            <flux:input label="No. Identitas (KTP/SIM)" wire:model="form.guest_identity" type="number" />
             <flux:textarea label="Tujuan Kunjungan" wire:model="form.purpose" rows="3" />
         @endif
         <flux:button variant="primary" type="submit">Save</flux:button>

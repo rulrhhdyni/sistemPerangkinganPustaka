@@ -1,6 +1,6 @@
 <x-layouts.auth>
     <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('PERPUSTAKAAN POLITEKNIK KAMPAR')" :description="__('SISTEM PERANGKINGAN VISITOR')" />
+        <x-auth-header :title="__('PERPUSTAKAAN PESANTREN AL-IHSAN')" :description="__('SISTEM PERPUSTAKAAN')" />
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />

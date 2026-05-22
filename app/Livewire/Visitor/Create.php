@@ -39,8 +39,8 @@ class Create extends Component
         } else {
             $this->validate([
                 'form.guest_name' => 'required|string',
-                'form.guest_phone' => 'required|string',
-                'form.guest_identity' => 'required|string',
+                'form.guest_phone' => 'required|numeric',
+                'form.guest_identity' => 'required|numeric',
                 'form.purpose' => 'required|string',
 
             ]);

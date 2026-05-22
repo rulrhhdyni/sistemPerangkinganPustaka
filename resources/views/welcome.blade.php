@@ -4,252 +4,254 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Kehadiran Perpustakaan</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Sistem Kehadiran Perpustakaan Al-Ihsan</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @fluxAppearance
+    <style>
+        body {
+            background-color: #0d2b1a !important;
+            color: #e2e8f0 !important;
+        }
+        header, footer {
+            background-color: #1a4731 !important;
+            border-color: #22604a !important;
+        }
+        .bg-base-100 {
+            background-color: #1a4731 !important;
+        }
+        .bg-base-200 {
+            background-color: #0d2b1a !important;
+        }
+        .border-base-300 {
+            border-color: #22604a !important;
+        }
+        .hero {
+            background-color: #0d2b1a !important;
+        }
+        .card {
+            background-color: #1a4731 !important;
+            border: 1px solid #22604a !important;
+        }
+        .badge-outline {
+            border-color: #22604a !important;
+            color: #e2e8f0 !important;
+        }
+        h1, h2, h3, p {
+            color: #e2e8f0 !important;
+        }
+        .text-base-content\/70 {
+            color: #a0b8a8 !important;
+        }
+        .text-base-content\/60 {
+            color: #8aa898 !important;
+        }
+        /* Marquee */
+        .animate-marquee {
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
 </head>
 
-<body class="min-h-screen flex flex-col bg-base-200">
+<body class="min-h-screen flex flex-col">
 
-    <!-- ================= HEADER / NAVBAR ================= -->
-    <header class="bg-base-100 border-b border-base-300 sticky top-0 z-50">
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50" style="background-color:#1a4731; border-bottom: 1px solid #22604a;">
         <nav class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 py-3">
-
-                <!-- Logo & Title -->
                 <div class="flex items-center gap-3">
-                    <img src="https://poltek-kampar.ac.id/storage/photos/22/logo_services/logo_polkam_no_background7.png"
-                        alt="Logo Politeknik Kampar" class="w-12 h-12 object-contain" />
-
+                    <div class="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        AI
+                    </div>
                     <div class="leading-tight">
-                        <h1 class="text-sm md:text-base font-bold uppercase">
-                            Sistem Kehadiran Perpustakaan
-                        </h1>
-                        <p class="text-xs md:text-sm font-semibold uppercase text-base-content/70">
-                            Politeknik Kampar
-                        </p>
+                        <h1 class="text-sm md:text-base font-bold uppercase text-white">Perpustakaan Al-Ihsan</h1>
+                        <p class="text-xs md:text-sm font-semibold uppercase" style="color:#a0b8a8;">Pondok Pesantren Al-Ihsan</p>
                     </div>
                 </div>
-
-                <!-- Info -->
                 <div class="flex flex-wrap items-center gap-2 md:justify-end">
-                    <span class="badge badge-outline px-4 py-3 text-xs md:text-sm">
-                        📍 Bangkinang
-                    </span>
-                    <span class="badge badge-outline px-4 py-3 text-xs md:text-sm">
-                        📅 12 Dec 2025
-                    </span>
-                    <span class="badge badge-outline px-4 py-3 text-xs md:text-sm">
-                        👤 2 Visitor
-                    </span>
+                    <span class="badge badge-outline px-4 py-3 text-xs md:text-sm" style="border-color:#22604a; color:#e2e8f0;">📍 Al-Ihsan</span>
+                    <span class="badge badge-outline px-4 py-3 text-xs md:text-sm" style="border-color:#22604a; color:#e2e8f0;">📅 {{ now()->translatedFormat('d M Y') }}</span>
+                    <span class="badge badge-outline px-4 py-3 text-xs md:text-sm" style="border-color:#22604a; color:#e2e8f0;">🕐 {{ now()->format('H:i') }}</span>
                 </div>
-
             </div>
         </nav>
     </header>
 
-    <!-- ================= MAIN CONTENT ================= -->
-    <main class="flex-1 min-h-screen">
-        <section class="hero bg-base-200 dark:bg-slate-800">
-            <div class="hero-content px-4 py-8 sm:py-10 md:py-12 text-center">
+    <!-- MAIN -->
+    <main class="flex-1 min-h-screen" style="background-color:#0d2b1a;">
+
+        <section style="background-color:#0d2b1a;">
+            <div class="hero-content px-4 py-8 sm:py-10 md:py-12 text-center mx-auto">
                 <div class="max-w-4xl space-y-4">
-
-                    <h1
-                        class="font-bold uppercase leading-tight
-                       text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
+                    <h1 class="font-bold uppercase leading-tight text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white">
                         Selamat Datang di <br class="hidden sm:block" />
-                        Perpustakaan Politeknik Kampar
+                        Perpustakaan Pondok Pesantren Al-Ihsan
                     </h1>
-
-                    <p class="text-sm sm:text-base md:text-lg text-base-content/70">
+                    <p class="text-sm sm:text-base md:text-lg" style="color:#a0b8a8;">
                         Sistem Kehadiran & Layanan Digital Perpustakaan
                     </p>
-
                 </div>
             </div>
         </section>
 
-        <div class="overflow-hidden bg-base-100 border-y border-base-300 my-4 max-w-7xl mx-auto">
-            <div class="flex w-max items-center animate-marquee hover:[animation-play-state:paused]"
-                aria-label="Informasi Perpustakaan">
-                <!-- duplicate text for seamless loop -->
-                <span class="mx-10 py-2 text-sm sm:text-base font-medium whitespace-nowrap">
-                    📢 Selamat Datang di Perpustakaan, Silakan Lakukan Absensi Kunjungan. |
+        <!-- MARQUEE -->
+        <div class="overflow-hidden my-4 max-w-7xl mx-auto" style="background-color:#1a4731; border-top:1px solid #22604a; border-bottom:1px solid #22604a;">
+            <div class="flex w-max items-center animate-marquee hover:[animation-play-state:paused]">
+                <span class="mx-10 py-2 text-sm sm:text-base font-medium whitespace-nowrap text-white">
+                    📢 Selamat Datang di Perpustakaan Al-Ihsan, Silakan Tempelkan Kartu RFID Anda. |
                     Ayo Berkunjung ke Perpustakaan — Ilmu Menanti Anda
                 </span>
-                <span class="mx-10 py-2 text-sm sm:text-base font-medium whitespace-nowrap">
-                    📢 Selamat Datang di Perpustakaan, Silakan Lakukan Absensi Kunjungan. |
+                <span class="mx-10 py-2 text-sm sm:text-base font-medium whitespace-nowrap text-white">
+                    📢 Selamat Datang di Perpustakaan Al-Ihsan, Silakan Tempelkan Kartu RFID Anda. |
                     Ayo Berkunjung ke Perpustakaan — Ilmu Menanti Anda
                 </span>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto ">
+        <!-- RFID SCAN AREA -->
+        <div class="max-w-7xl mx-auto px-4 py-6">
+            <div class="flex justify-center">
+                <div class="w-full max-w-lg rounded-xl shadow-lg p-8 flex flex-col items-center text-center gap-6" style="background-color:#1a4731; border:1px solid #22604a;">
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
+                    <h2 class="text-xl font-semibold text-white">
+                        Silakan tempelkan kartu RFID Anda <br>
+                        pada reader untuk absensi kehadiran.
+                    </h2>
 
-                <!-- ================= LEFT CARD : FORM ================= -->
-                <div class="card bg-base-100 shadow-lg" x-data x-init="Echo.channel('visitors')
-                    .listen('.visitor.created', () => {
-                        {{-- alert('New Visitor'); --}}
-                    })">
-                    <div class="card-body">
-                        <h2 class="text-lg font-bold mb-2">
-                            Form Kunjungan Perpustakaan
-                        </h2>
-                        <livewire:visitor.create />
-                    </div>
-                </div>
-
-                <!-- ================= RIGHT CARD : INFO SCAN ================= -->
-                <div class="card bg-base-100 shadow-lg">
-                    <div class="card-body flex flex-col items-center text-center gap-4">
-
-                        <h2 class="text-lg font-semibold">
-                            Silakan scan kartu anggota Anda <br>
-                            pada scanner untuk absensi kehadiran.
-                        </h2>
-
-                        <div class="w-full max-w-sm">
-                            <svg fill="#000000" class="w-fit" viewBox="0 0 24 24" id="barcode-scan"
-                                data-name="Flat Color" xmlns="http://www.w3.org/2000/svg" class="icon flat-color">
-                                <path id="secondary"
-                                    d="M16,18a1,1,0,0,1-1-1V16a1,1,0,0,1,2,0v1A1,1,0,0,1,16,18Zm-4,0a1,1,0,0,1-1-1V16a1,1,0,0,1,2,0v1A1,1,0,0,1,12,18ZM8,18a1,1,0,0,1-1-1V16a1,1,0,0,1,2,0v1A1,1,0,0,1,8,18Zm12-5H4a1,1,0,0,1,0-2H20a1,1,0,0,1,0,2ZM16,9a1,1,0,0,1-1-1V7a1,1,0,0,1,2,0V8A1,1,0,0,1,16,9ZM12,9a1,1,0,0,1-1-1V7a1,1,0,0,1,2,0V8A1,1,0,0,1,12,9ZM8,9A1,1,0,0,1,7,8V7A1,1,0,0,1,9,7V8A1,1,0,0,1,8,9Z"
-                                    style="fill: rgb(44, 169, 188);"></path>
-                                <path id="primary"
-                                    d="M3,9A1,1,0,0,1,2,8V4A2,2,0,0,1,4,2H8A1,1,0,0,1,8,4H4V8A1,1,0,0,1,3,9ZM22,8V4a2,2,0,0,0-2-2H16a1,1,0,0,0,0,2h4V8a1,1,0,0,0,2,0ZM9,21a1,1,0,0,0-1-1H4V16a1,1,0,0,0-2,0v4a2,2,0,0,0,2,2H8A1,1,0,0,0,9,21Zm13-1V16a1,1,0,0,0-2,0v4H16a1,1,0,0,0,0,2h4A2,2,0,0,0,22,20Z"
-                                    style="fill: rgb(0, 0, 0);"></path>
+                    <div class="relative flex items-center justify-center w-48 h-48">
+                        <div class="absolute w-48 h-48 rounded-full border-4 border-teal-400 opacity-20 animate-ping"></div>
+                        <div class="absolute w-36 h-36 rounded-full border-4 border-teal-400 opacity-30 animate-ping" style="animation-delay: 0.3s"></div>
+                        <div class="absolute w-24 h-24 rounded-full border-4 border-teal-400 opacity-40 animate-ping" style="animation-delay: 0.6s"></div>
+                        <div class="relative z-10 rounded-full p-4" style="background-color:#1a4731;">
+                            <svg viewBox="0 0 80 80" class="w-20 h-20" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="8" y="25" width="50" height="32" rx="4" fill="#1e293b" stroke="#2ca9bc" stroke-width="1.5"/>
+                                <rect x="16" y="33" width="14" height="10" rx="2" fill="#2ca9bc" opacity="0.9"/>
+                                <line x1="19" y1="33" x2="19" y2="43" stroke="#1e293b" stroke-width="0.8"/>
+                                <line x1="23" y1="33" x2="23" y2="43" stroke="#1e293b" stroke-width="0.8"/>
+                                <line x1="27" y1="33" x2="27" y2="43" stroke="#1e293b" stroke-width="0.8"/>
+                                <line x1="16" y1="48" x2="45" y2="48" stroke="#2ca9bc" stroke-width="1" opacity="0.5"/>
+                                <line x1="16" y1="51" x2="35" y2="51" stroke="#2ca9bc" stroke-width="1" opacity="0.3"/>
+                                <path d="M62 32 Q68 40 62 48" fill="none" stroke="#2ca9bc" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M66 28 Q75 40 66 52" fill="none" stroke="#2ca9bc" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+                                <path d="M70 24 Q82 40 70 56" fill="none" stroke="#2ca9bc" stroke-width="2" stroke-linecap="round" opacity="0.3"/>
                             </svg>
                         </div>
-
-                        <p class="text-base-content/70">
-                            Non-anggota atau anggota yang lupa membawa kartu
-                            silakan input kehadiran melalui form.
-                        </p>
-
                     </div>
+
+                    <div id="rfid-status" class="badge badge-outline badge-lg px-8 py-4 text-sm font-medium transition-all duration-300" style="border-color:#22604a; color:#e2e8f0;">
+                        ⏳ Menunggu kartu RFID...
+                    </div>
+
                 </div>
-
             </div>
-
         </div>
 
     </main>
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="bg-base-100 border-t border-base-300">
+    <!-- FOOTER -->
+    <footer style="background-color:#1a4731; border-top:1px solid #22604a;">
         <div class="max-w-7xl mx-auto px-4 py-4">
-            <p class="text-center text-sm text-base-content/60">
-                © {{ date('Y') }} Politeknik Kampar — Sistem Kehadiran Perpustakaan
+            <p class="text-center text-sm" style="color:#a0b8a8;">
+                © {{ date('Y') }} Pondok Pesantren Al-Ihsan — Sistem Kehadiran Perpustakaan
             </p>
         </div>
     </footer>
 
+    <!-- MODAL SUKSES -->
     <dialog id="welcome_modal" class="modal">
-        <div class="modal-box relative p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl animate-fadeIn">
-            <!-- Close Button -->
+        <div class="modal-box relative p-6 rounded-xl shadow-xl" style="background-color:#1a4731; border:1px solid #22604a;">
             <form method="dialog">
-                <button
-                    class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200">
-                    ✕
-                </button>
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-white">✕</button>
             </form>
-
-            <!-- Success Icon -->
             <div class="flex justify-center">
-                <div
-                    class="bg-green-100 text-green-600 rounded-full w-16 h-16 flex items-center justify-center text-3xl mb-4">
-                    ✅
-                </div>
+                <div class="bg-green-800 text-green-300 rounded-full w-16 h-16 flex items-center justify-center text-3xl mb-4">✅</div>
             </div>
-
-            <!-- Title -->
-            <h3 class="text-center text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                Hi, Selamat Datang!
-            </h3>
-
-            <!-- Description -->
-            <p class="text-center text-gray-600 dark:text-gray-300 mb-4">
-                Anda berhasil mengisi kehadiran di pustaka. Terima kasih telah datang!
-            </p>
-
-            <!-- Optional: Additional Info -->
-            <div class="text-center text-sm text-gray-500 dark:text-gray-400">
+            <h3 class="text-center text-xl font-semibold text-white mb-2">Ahlan Wa Sahlan! 🌙</h3>
+            <p class="text-center mb-4" style="color:#a0b8a8;">Absensi kunjungan perpustakaan berhasil dicatat. Selamat belajar!</p>
+            <div class="text-center text-sm" style="color:#8aa898;">
                 Waktu kehadiran: <span id="visit_time">{{ now()->format('H:i') }}</span>
             </div>
         </div>
     </dialog>
 
+    <!-- MODAL GAGAL -->
     <dialog id="barcode_gagal" class="modal">
-        <div class="modal-box relative p-6 bg-white dark:bg-gray-800 rounded-xl shadow-xl animate-fadeIn">
-            <!-- Close Button -->
+        <div class="modal-box relative p-6 rounded-xl shadow-xl" style="background-color:#1a4731; border:1px solid #22604a;">
             <form method="dialog">
-                <button
-                    class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200">
-                    ✕
-                </button>
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-white">✕</button>
             </form>
-
-            <!-- Success Icon -->
             <div class="flex justify-center">
-                <div
-                    class="bg-red-100 text-red-600 rounded-full w-16 h-16 flex items-center justify-center text-3xl mb-4">
-                    ❌
-                </div>
+                <div class="bg-red-900 text-red-300 rounded-full w-16 h-16 flex items-center justify-center text-3xl mb-4">❌</div>
             </div>
-
-            <!-- Title -->
-            <h3 class="text-center text-xl font-semibold text-red-700 dark:text-red-300 mb-2">
-                Kartu Anggota Tidak Dikenal
-            </h3>
-
-            <!-- Description -->
-            <p class="text-center text-gray-600 dark:text-gray-300 mb-4">
-                Kartu anggota tidak dikenal. Silakan periksa kembali kartu Anda.
-            </p>
+            <h3 class="text-center text-xl font-semibold text-red-300 mb-2">Kartu RFID Tidak Dikenal</h3>
+            <p class="text-center mb-4" style="color:#a0b8a8;">Kartu RFID tidak terdaftar. Silakan hubungi petugas perpustakaan.</p>
         </div>
     </dialog>
 
     @fluxScripts
+
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Echo.channel('visitors')
-                .listen('.visitor.created', (e) => {
+        let rfidBuffer = '';
+        let rfidTimeout = null;
+        document.addEventListener('keydown', function(e) {
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+            if (e.key === 'Enter') {
+                if (rfidBuffer.length > 0) {
+                    const rfid = rfidBuffer;
+                    rfidBuffer = '';
+                    processRFID(rfid);
+                }
+            } else if (e.key.length === 1) {
+                rfidBuffer += e.key;
+                clearTimeout(rfidTimeout);
+                rfidTimeout = setTimeout(() => { rfidBuffer = ''; }, 100);
+            }
+        });
+
+        function setStatus(text, type) {
+            const el = document.getElementById('rfid-status');
+            if (!el) return;
+            el.textContent = text;
+            el.className = `badge badge-${type} badge-lg px-8 py-4 text-sm font-medium transition-all duration-300`;
+        }
+
+        function processRFID(rfid) {
+            setStatus('🔄 Memproses kartu...', 'warning');
+            fetch('/rfid-absensi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ rfid: rfid })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.type === 'admin') {
+                    setStatus('🔐 Admin terdeteksi, masuk...', 'info');
+                    window.location.href = data.redirect;
+                } else if (data.type === 'member') {
+                    setStatus('✅ Absensi Berhasil!', 'success');
+                    setTimeout(() => setStatus('⏳ Menunggu kartu RFID...', 'outline'), 4000);
                     const modal = document.getElementById('welcome_modal');
-                    if (modal) {
-                        modal.showModal();
-
-                        // Auto close after 5 seconds
-                        setTimeout(() => {
-                            modal.close();
-                        }, 5000);
-                    }
-                });
-        });
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('openWelcomeModal', () => {
-                const modal = document.getElementById('welcome_modal');
-                if (modal) {
-                    modal.showModal();
-
-                    // Auto close after 5 seconds
-                    setTimeout(() => {
-                        modal.close();
-                    }, 5000);
+                    if (modal) { modal.showModal(); setTimeout(() => modal.close(), 5000); }
+                } else {
+                    setStatus('❌ Kartu tidak dikenal!', 'error');
+                    setTimeout(() => setStatus('⏳ Menunggu kartu RFID...', 'outline'), 4000);
+                    const modal = document.getElementById('barcode_gagal');
+                    if (modal) { modal.showModal(); setTimeout(() => modal.close(), 5000); }
                 }
+            })
+            .catch(() => {
+                setStatus('❌ Terjadi kesalahan!', 'error');
+                setTimeout(() => setStatus('⏳ Menunggu kartu RFID...', 'outline'), 4000);
             });
-
-            Livewire.on('openBarcodeGagalModal', () => {
-                const modal = document.getElementById('barcode_gagal');
-                if (modal) {
-                    modal.showModal();
-                    setTimeout(() => {
-                        modal.close();
-                    }, 5000);
-                }
-            });
-        });
+        }
     </script>
-</body>
 
+</body>
 </html>

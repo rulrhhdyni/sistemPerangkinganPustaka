@@ -2,8 +2,8 @@
 
     {{-- TOTAL MEMBER --}}
     <div class="stat ">
-        <div class="stat-title text-sm">Total Member</div>
-        <div class="stat-value text-primary">
+        <div class="stat-title text-lg">Total Member</div>
+        <div class="stat-value text-primary text-7xl">
             {{ number_format($totalMembers) }}
         </div>
         <div class="stat-desc text-xs opacity-70">
@@ -13,8 +13,8 @@
 
     {{-- HARI INI --}}
     <div class="stat">
-        <div class="stat-title text-sm">Pengunjung Hari Ini</div>
-        <div class="stat-value">
+        <div class="stat-title text-lg">Pengunjung Hari Ini</div>
+        <div class="stat-value text-7xl">
             {{ $todayTotal }}
         </div>
         <div class="stat-desc text-xs flex gap-2">
@@ -31,8 +31,8 @@
 
     {{-- BULAN INI --}}
     <div class="stat">
-        <div class="stat-title text-sm">Pengunjung Bulan Ini</div>
-        <div class="stat-value">
+        <div class="stat-title text-lg">Pengunjung Bulan Ini</div>
+        <div class="stat-value text-7xl">
             {{ $monthTotal }}
         </div>
         <div class="stat-desc text-xs flex gap-2">
@@ -49,8 +49,8 @@
 
     {{-- TAHUN INI --}}
     <div class="stat">
-        <div class="stat-title text-sm">Pengunjung Tahun Ini</div>
-        <div class="stat-value">
+        <div class="stat-title text-lg">Pengunjung Tahun Ini</div>
+        <div class="stat-value text-7xl">
             {{ $yearTotal }}
         </div>
         <div class="stat-desc text-xs flex gap-2">

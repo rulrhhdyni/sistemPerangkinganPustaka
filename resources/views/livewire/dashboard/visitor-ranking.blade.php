@@ -26,7 +26,7 @@
 
                     {{-- RANK --}}
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-sm">
+                        <span class="font-bold text-lg">
                             @if ($i === 0)
                                 🏆 Rank #1
                             @elseif ($i === 1)
@@ -45,7 +45,7 @@
 
                     {{-- NAME --}}
                     <div>
-                        <p class="font-semibold text-sm truncate">
+                        <p class="font-semibold text-md truncate">
                             {{ $row->guest_name ?? 'Guest Tidak Dikenal' }}
                         </p>
                         <p class="text-xs opacity-60">
