@@ -32,24 +32,32 @@ Route::middleware('web')->post('/rfid-absensi', function (\Illuminate\Http\Reque
         return response()->json(['type' => 'admin', 'redirect' => '/dashboard']);
     }
     
-    // Cek apakah member/santri
-    $member = \App\Models\Member::where('slims_member_id', $rfid)->first();
+        // Cek apakah member/santri
+    $rfid = trim($request->rfid);
+    $member = \App\Models\Member::where('rfid_code', $rfid)->first();
+
     if ($member) {
+        // 1. Ambil data nama dan kontak dari database lokal yang sudah tersinkronisasi
+        $memberName = $member->display_name;
+        $memberPhone = $member->display_phone;
+
+        // 2. Simpan kunjungan dengan data lokal
         \App\Models\Visit::create([
-            'member_id' => $member->id,
-            'guest_name' => $member->name,
-            'guest_phone' => $member->phone,
-            'guest_identity' => $member->slims_member_id,
-            'visit_type' => 'member',
-            'visit_date' => now()->toDateString(),
-            'visit_time' => now()->toTimeString(),
+            'member_id'      => $member->id,
+            'guest_name'     => $memberName,
+            'guest_phone'    => $memberPhone,
+            'guest_identity' => $member->id_server, // Menggunakan id_server sebagai identitas
+            'visit_type'     => 'member',
+            'visit_date'     => now()->toDateString(),
+            'visit_time'     => now()->toTimeString(),
         ]);
+
         \App\Events\VisitorCreated::dispatch();
-        return response()->json(['type' => 'member', 'name' => $member->name]);
+        return response()->json(['type' => 'member', 'name' => $memberName]);
     }
-    
-    return response()->json(['type' => 'unknown']);
-})->name('rfid.absensi');
+        
+        return response()->json(['type' => 'unknown']);
+    })->name('rfid.absensi');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth'])
@@ -61,10 +69,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('users', UsersIndex::class)->name('users.index');
 
     Route::get('loans', LoanIndex::class)->name('loan.index');
-    Route::get('/lost-books', [CirculationController::class, 'lostBooks'])->name('lost.index');
+    Route::get('/lost-books', \App\Livewire\Loans\Lost::class)->name('lost.index');
     
     // Denda
-    Route::get('/fines', [CirculationController::class, 'fines'])->name('fine.index');
+    Route::get('/fines', \App\Livewire\Loans\Fines::class)->name('fine.index');
     Route::post('/fines/{fine}/pay', [CirculationController::class, 'payFine'])->name('fine.pay');
     // Bebas Pustaka
     Route::get('/clearance', [CirculationController::class, 'clearance'])->name('clearance.index');

@@ -39,4 +39,9 @@ return [
         'limit' => env('SLIMS_API_LIMIT', 100),
     ],
 
+    'ibs_api' => [
+    'token' => env('API_IBS_TOKEN'),
+    'url'   => 'http://192.168.2.46/api_ibs/public/api/',
+    ],
+
 ];

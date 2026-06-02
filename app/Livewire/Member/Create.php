@@ -8,7 +8,7 @@ use App\Models\Member;
 class Create extends Component
 {
     public $form = [
-        'slims_member_id' => '',
+        'id_server' => '',
         'name' => '',
         'email' => '',
         'phone' => '',
@@ -32,7 +32,7 @@ class Create extends Component
     {
         $this->validate(
             [
-                'form.slims_member_id' => 'required|unique:members,slims_member_id|string|max:100',
+                'form.id_server' => 'required|unique:members,slims_member_id|string|max:100',
                 'form.name' => 'required|string|max:255',
                 'form.email' => 'required|email|unique:members,email',
                 'form.phone' => 'nullable|string|max:20',
@@ -40,8 +40,8 @@ class Create extends Component
                 'form.type' => 'required|string|max:100',
             ],
             [
-                'form.slims_member_id.required' => 'The slims member id field is required.',
-                'form.slims_member_id.unique' => 'The slims member id has already been taken.',
+                'form.id_server.required' => 'The slims member id field is required.',
+                'form.id.unique' => 'The slims member id has already been taken.',
                 'form.name.required' => 'The name field is required.',
                 'form.email.required' => 'The email field is required.',
                 'form.email.email' => 'The email must be a valid email address.',

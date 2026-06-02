@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
-        <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
+    <body class="min-h-screen">
+        <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-white">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
             <a href="{{ route('dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
@@ -28,6 +28,21 @@
                 {{ __('Documentation') }}
                 </flux:navlist.item>
             </flux:navlist>
+
+            <!-- Desktop Theme Switcher -->
+            <flux:dropdown class="hidden lg:block mb-4" position="right" align="end" x-data>
+                {{-- Tombol yang berubah otomatis --}}
+                <flux:button variant="ghost" class="w-full justify-start gap-2" 
+                    x-bind:icon="document.documentElement.classList.contains('dark') ? 'moon' : 'sun'">
+                    {{ __('Theme') }}
+                </flux:button>
+                
+                <flux:menu class="w-[180px]">
+                    <flux:menu.item onclick="setTheme('light')" icon="sun">{{ __('Light') }}</flux:menu.item>
+                    <flux:menu.item onclick="setTheme('dark')" icon="moon">{{ __('Dark') }}</flux:menu.item>
+                    <flux:menu.item onclick="setTheme('system')" icon="computer-desktop">{{ __('System') }}</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
 
             <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
@@ -81,6 +96,21 @@
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
             <flux:spacer />
+
+            <!-- Mobile Theme Switcher -->
+            <flux:dropdown class="hidden lg:block mb-4" position="right" align="end" x-data>
+                {{-- Tombol yang berubah otomatis --}}
+                <flux:button variant="ghost" class="w-full justify-start gap-2" 
+                    x-bind:icon="document.documentElement.classList.contains('dark') ? 'moon' : 'sun'">
+                    {{ __('Theme') }}
+                </flux:button>
+                
+                <flux:menu class="w-[180px]">
+                    <flux:menu.item onclick="setTheme('light')" icon="sun">{{ __('Light') }}</flux:menu.item>
+                    <flux:menu.item onclick="setTheme('dark')" icon="moon">{{ __('Dark') }}</flux:menu.item>
+                    <flux:menu.item onclick="setTheme('system')" icon="computer-desktop">{{ __('System') }}</flux:menu.item>
+                </flux:menu>
+            </flux:dropdown>
 
             <flux:dropdown position="top" align="end">
                 <flux:profile

@@ -90,26 +90,11 @@ class CirculationController extends Controller
         return back()->with('success', 'Buku berhasil dikembalikan tepat waktu.');
     }
 
-    public function fines()
-{
-    $fines = Fine::with(['member', 'loan'])->where('payment_status', 'belum_bayar')->get();
-    return view('loans.fines', compact('fines'));
-}
-
 // Proses Bayar Denda
 public function payFine(Fine $fine)
 {
     $fine->update(['payment_status' => 'lunas']);
     return redirect()->back()->with('success', 'Denda berhasil dibayar!');
-}
-
-public function lostBooks()
-{
-    $lostLoans = Loan::with(['member', 'fines'])
-        ->where('status', 'hilang')
-        ->latest()
-        ->get();
-    return view('loans.lost', compact('lostLoans'));
 }
 
 // Tampilan Surat Bebas Pustaka

@@ -143,7 +143,7 @@ class Index extends Component
 
     public function render()
     {
-        $data = $this->periode
+        $data = $this->periode 
             ? $this->rekapVisitorIndividu() // REKAP MODE
             : $this->query();               // NORMAL MODE
 
@@ -152,3 +152,4 @@ class Index extends Component
         ]);
     }
 }
+
