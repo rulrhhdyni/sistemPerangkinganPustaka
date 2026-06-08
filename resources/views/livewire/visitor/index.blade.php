@@ -6,11 +6,6 @@
             <h1 class="text-2xl font-semibold text-base-content">
                 Data Kunjungan
             </h1>
-            {{-- <div class="flex gap-2">
-                <button x-on:click="$dispatch('open-slideover', 'create-member')" class="btn btn-sm btn-primary">
-                    Add Member
-                </button>
-            </div> --}}
         </div>
 
         {{-- Card --}}
@@ -86,7 +81,6 @@
 
             </div>
 
-
             {{-- Table --}}
             <div class="overflow-x-auto">
                 <table class="table table-zebra">
@@ -108,18 +102,20 @@
                         </tr>
                     </thead>
 
-
                     <tbody>
                         @forelse ($visits as $visit)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                {{-- PERBAIKAN PAGINATION NUMBERING --}}
+                                <td>{{ $visits->firstItem() + $loop->index }}</td>
 
                                 <td class="font-medium">
-                                    {{ $visit->guest_identity ?? '-' }}
+                                    {{-- PERBAIKAN IDENTITAS --}}
+                                    {{ $visit->api_identitas ?? $visit->guest_identity ?? '-' }}
                                 </td>
 
                                 <td class="font-medium">
-                                    {{ $visit->guest_name ?? '-' }}
+                                    {{-- PERBAIKAN NAMA --}}
+                                    {{ $visit->api_nama ?? $visit->guest_name ?? '-' }}
                                 </td>
 
                                 <td>
@@ -165,14 +161,13 @@
             <div class="p-4 flex flex-col sm:flex-row gap-2 items-center justify-between text-sm">
                 <div>
                     Showing
-                    <strong>{{ $visits->firstItem() }}</strong>
+                    <strong>{{ $visits->firstItem() ?? 0 }}</strong>
                     to
-                    <strong>{{ $visits->lastItem() }}</strong>
+                    <strong>{{ $visits->lastItem() ?? 0 }}</strong>
                     of
                     <strong>{{ $visits->total() }}</strong>
                 </div>
 
-                {{-- {{ $visits->links() }} --}}
                 @if ($visits instanceof \Illuminate\Pagination\LengthAwarePaginator && $visits->hasPages())
                     <div class="join grid grid-cols-2">
                         @if ($visits && $visits->onFirstPage())

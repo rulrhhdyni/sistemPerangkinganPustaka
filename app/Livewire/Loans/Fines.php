@@ -11,10 +11,11 @@ use Flux\Flux;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Livewire\WithPagination;
 
 class Fines extends Component
 {
-    use WithToast;
+    use WithToast, WithPagination;
 
     public $pin             = '';
     public $selectedFineId  = null;
@@ -113,7 +114,7 @@ class Fines extends Component
                         'type'        => $member->type ?? '-',
                     ];
                     
-                    return; // Selesai
+                    return; // Selesa
                 }
             }
             
@@ -200,12 +201,16 @@ class Fines extends Component
 
     public function render()
     {
-        $fines = Fine::with(['member', 'loan'])
-                     ->where('payment_status', 'belum_bayar')
-                     ->latest()
-                     ->get();
+        // 1. KALKULASI REKAP UANG MASUK (Gunakan query terpisah agar hitungan tidak terpotong pagination)
+        $totalLunasTelat = Fine::where('payment_status', 'lunas')->where('fine_type', 'keterlambatan')->sum('total_fines');
+        $totalLunasHilang = Fine::where('payment_status', 'lunas')->where('fine_type', 'hilang')->sum('total_fines');
+        $totalLunasKeseluruhan = $totalLunasTelat + $totalLunasHilang;
+        $orangBelumLunas = Fine::where('payment_status', 'belum_bayar')->distinct('member_id')->count();
 
-        // ✅ Mengambil seluruh data API sekali saja untuk mapping nama ke tabel
+        // 2. QUERY TABEL DENGAN PAGINATION (10 data per halaman)
+        $fines = Fine::with(['member', 'loan'])->latest()->paginate(10);
+
+        // ✅ Tarik Data API
         $apiMembers = collect();
         try {
             $response = Http::withToken(config('services.ibs_api.token'))
@@ -216,21 +221,19 @@ class Fines extends Component
                             ]);
 
             if ($response->successful()) {
-                // Tembus lapisan pagination JSON
                 $dataArray = $response->json('data.data') ?? [];
                 if (empty($dataArray) && !empty($response->json('data'))) {
                      $dataArray = $response->json('data'); 
                      if (isset($dataArray['data'])) $dataArray = $dataArray['data'];
                 }
-                
                 $apiMembers = collect($dataArray)->keyBy('rfid_code');
             }
         } catch (\Exception $e) {
-            Log::warning('[Fines] Gagal meload nama API untuk tabel: ' . $e->getMessage());
+            Log::warning('[Fines] Gagal meload nama API: ' . $e->getMessage());
         }
 
-        // Mapping dinamis nama dari API ke daftar denda
-        foreach ($fines as $fine) {
+        // Mapping dinamis (gunakan items() karena $fines sekarang adalah paginator)
+        foreach ($fines->items() as $fine) {
             $rfid = $fine->member->rfid_code ?? null;
             $apiData = $apiMembers->get($rfid);
 
@@ -240,16 +243,20 @@ class Fines extends Component
                 $detailPegawai = $nasabah['detail_pegawai'] ?? [];
                 $isSantri      = strtolower($nasabah['jenis_nasabah']['nama_komponen'] ?? '') === 'santri';
                 
-                $nama = $isSantri
+                $fine->api_nama = $isSantri
                     ? ($detailSantri['nama_lengkap'] ?? ($nasabah['nama'] ?? '-'))
                     : ($detailPegawai['nama_pegawai'] ?? ($nasabah['nama'] ?? '-'));
-                
-                $fine->api_nama = $nama;
             } else {
                 $fine->api_nama = 'RFID: ' . ($rfid ?? 'Tidak Dikenal');
             }
         }
 
-        return view('livewire.loans.fines', ['fines' => $fines])->title('Data Denda');
+        return view('livewire.loans.fines', [
+            'fines' => $fines,
+            'totalLunasTelat' => $totalLunasTelat,
+            'totalLunasHilang' => $totalLunasHilang,
+            'totalLunasKeseluruhan' => $totalLunasKeseluruhan,
+            'orangBelumLunas' => $orangBelumLunas
+        ])->title('Data Denda');
     }
 }

@@ -27,11 +27,13 @@
                         <td>{{ $i + 1 }}</td>
 
                         <td class="font-medium">
-                            {{ $visit->guest_name ?? '-' }}
+                            {{-- Panggil Nama dari API --}}
+                            {{ $visit->api_nama ?? $visit->guest_name ?? '-' }}
                         </td>
 
                         <td class="text-xs">
-                            {{ $visit->guest_identity ?? '-' }}
+                            {{-- Panggil Identitas dari API --}}
+                            {{ $visit->api_identitas ?? $visit->guest_identity ?? '-' }}
                         </td>
 
                         <td>

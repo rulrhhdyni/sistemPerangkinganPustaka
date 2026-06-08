@@ -4,35 +4,63 @@
         {{-- Header --}}
         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
             <div>
-                <h1 class="text-2xl font-semibold text-base-content">Data Denda</h1>
-                <p class="text-sm text-base-content/60 mt-1">Daftar denda yang belum dibayar</p>
+                <h1 class="text-2xl font-semibold text-base-content">Pembayaran & Rekapitulasi Denda</h1>
+                <p class="text-sm text-base-content/60 mt-1">Riwayat tagihan hilang dan keterlambatan</p>
             </div>
         </div>
 
-        {{-- Stats --}}
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div class="card bg-base-100 border border-base-300 shadow-sm p-4">
-                <p class="text-xs text-base-content/60 mb-1">Total Denda Belum Bayar</p>
-                <p class="text-2xl font-semibold text-error">{{ $fines->count() }}</p>
-                <p class="text-xs text-base-content/50 mt-1">transaksi</p>
+       {{-- Stats / Dashboard (REVISI KOTAK PERSEGI BERJAJAR HORIZONTAL) --}}
+        <div class="mb-8" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem;">
+            
+            {{-- Card 1: Pemasukan Keterlambatan --}}
+            <div class="card bg-base-100 border border-base-300 shadow-sm p-5 rounded-xl aspect-square flex flex-col justify-between">
+                <div>
+                    <p class="text-[11px] font-bold text-base-content/50 uppercase tracking-wider">Total Denda terlambat</p>
+                    <p class="text-2xl font-bold text-success mt-2">
+                        Rp {{ number_format($totalLunasTelat, 0, ',', '.') }}
+                    </p>
+                </div>
+                <span class="text-[10px] font-bold text-success bg-success/10 px-2 py-1 rounded w-fit uppercase">Lunas</span>
             </div>
-            <div class="card bg-base-100 border border-base-300 shadow-sm p-4">
-                <p class="text-xs text-base-content/60 mb-1">Total Nominal Denda</p>
-                <p class="text-2xl font-semibold text-warning">
-                    Rp {{ number_format($fines->sum('total_fines'), 0, ',', '.') }}
-                </p>
-                <p class="text-xs text-base-content/50 mt-1">belum dibayar</p>
+            
+            {{-- Card 2: Pemasukan Buku Hilang --}}
+            <div class="card bg-base-100 border border-base-300 shadow-sm p-5 rounded-xl aspect-square flex flex-col justify-between">
+                <div>
+                    <p class="text-[11px] font-bold text-base-content/50 uppercase tracking-wider">Total Denda Buku Hilang</p>
+                    <p class="text-2xl font-bold text-success mt-2">
+                        Rp {{ number_format($totalLunasHilang, 0, ',', '.') }}
+                    </p>
+                </div>
+                <span class="text-[10px] font-bold text-success bg-success/10 px-2 py-1 rounded w-fit uppercase">Lunas</span>
             </div>
-            <div class="card bg-base-100 border border-base-300 shadow-sm p-4">
-                <p class="text-xs text-base-content/60 mb-1">Peminjam Terdenda</p>
-                <p class="text-2xl font-semibold text-info">
-                    {{ $fines->unique('member_id')->count() }}
-                </p>
-                <p class="text-xs text-base-content/50 mt-1">orang</p>
+            
+            {{-- Card 3: Total Uang Masuk (Premium Blue Frosted Glass) --}}
+            <div class="card border border-blue-500/20 shadow-md p-5 rounded-xl aspect-square flex flex-col justify-between relative overflow-hidden" style="background: rgba(59, 130, 246, 0.08); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);">
+                <div class="relative z-10 flex flex-col justify-between h-full w-full">
+                    <div>
+                        <p class="text-[11px] font-bold text-blue-500 uppercase tracking-wider">Total Denda Keseluruhan</p>
+                        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                            Rp {{ number_format($totalLunasKeseluruhan, 0, ',', '.') }}
+                        </p>
+                    </div>
+                    <span class="text-[10px] font-bold text-blue-600 bg-blue-500/20 px-2 py-1 rounded w-fit uppercase tracking-wide">Total Net</span>
+                </div>
             </div>
+            
+            {{-- Card 4: Peminjam Menunggak --}}
+            <div class="card bg-base-100 border border-base-300 shadow-sm p-5 rounded-xl aspect-square flex flex-col justify-between">
+                <div>
+                    <p class="text-[11px] font-bold text-base-content/50 uppercase tracking-wider">Belum Lunas</p>
+                    <p class="text-3xl font-bold text-error mt-2">
+                        {{ $orangBelumLunas }} <span class="text-sm font-normal text-base-content/50">Orang</span>
+                    </p>
+                </div>
+                <span class="text-[10px] font-bold text-error bg-error/10 px-2 py-1 rounded w-fit uppercase">Menunggak</span>
+            </div>
+            
         </div>
 
-        {{-- Table --}}
+        {{-- Table Riwayat Denda (Lunas & Belum Lunas) --}}
         <div class="card bg-base-100 shadow border border-base-300">
             <div class="overflow-x-auto">
                 <table class="table table-zebra text-sm">
@@ -45,14 +73,15 @@
                             <th>Keterlambatan</th>
                             <th>Tipe Denda</th>
                             <th>Denda</th>
-                            <th>Status</th>
+                            <th>Jumlah Dibayar</th>
                             <th class="text-center">Aksi</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse ($fines as $fine)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td><td>{{ $fines->firstItem() + $loop->index }}</td></td>
                                 <td>
                                     <div class="flex items-center gap-2">
                                         <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xs">
@@ -72,7 +101,10 @@
                                     {{ $fine->loan->due_date ? \Carbon\Carbon::parse($fine->loan->due_date)->format('d M Y') : '-' }}
                                 </td>
                                 <td>
-                                    @if($fine->loan && $fine->loan->due_date)
+                                    {{-- REVISI BUG: Kosongkan selisih hari jika buku hilang --}}
+                                    @if($fine->fine_type === 'hilang')
+                                        <span class="text-base-content/30 italic text-xs">Hilang</span>
+                                    @elseif($fine->loan && $fine->loan->due_date)
                                         @php
                                             $returnDate = $fine->loan->return_date ? \Carbon\Carbon::parse($fine->loan->return_date)->startOfDay() : \Carbon\Carbon::today();
                                             $dueDate = \Carbon\Carbon::parse($fine->loan->due_date)->startOfDay();
@@ -85,23 +117,32 @@
                                 </td>
                                 <td>
                                     @if($fine->fine_type === 'hilang')
-                                        <span class="badge badge-error badge-sm">Buku Hilang</span>
+                                        <span class="badge badge-error badge-sm text-white">Buku Hilang</span>
                                     @else
-                                        <span class="badge badge-warning badge-sm">Keterlambatan</span>
+                                        <span class="badge badge-warning badge-sm text-black">Keterlambatan</span>
                                     @endif
                                 </td>
                                 <td class="font-semibold text-error">
                                     Rp {{ number_format($fine->total_fines, 0, ',', '.') }}
                                 </td>
                                 <td>
-                                    <span class="badge badge-warning badge-sm">Belum Bayar</span>
+                                    {{-- REVISI: Tampilkan Lunas atau Belum Bayar --}}
+                                    @if($fine->payment_status === 'lunas')
+                                        <span class="badge badge-success badge-sm text-white">Lunas</span>
+                                    @else
+                                        <span class="badge badge-warning badge-sm text-black">Belum Bayar</span>
+                                    @endif
                                 </td>
                                 <td class="text-center">
-                                    <button 
-                                        wire:click="openPaymentModal({{ $fine->id }})" 
-                                        class="btn btn-xs btn-success text-white">
-                                        Bayar Denda
-                                    </button>
+                                    @if($fine->payment_status === 'lunas')
+                                        <button class="btn btn-xs btn-ghost text-success" disabled>Selesai</button>
+                                    @else
+                                        <button 
+                                            wire:click="openPaymentModal({{ $fine->id }})" 
+                                            class="btn btn-xs bg-emerald-600 hover:bg-emerald-700 border-none text-white">
+                                            Bayar Denda
+                                        </button>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
@@ -109,7 +150,7 @@
                                 <td colspan="9" class="text-center py-16">
                                     <div class="flex flex-col items-center gap-2 opacity-50">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                                        <p class="text-sm">Tidak ada denda yang belum dibayar</p>
+                                        <p class="text-sm">Tidak ada riwayat denda</p>
                                     </div>
                                 </td>
                             </tr>
@@ -117,22 +158,23 @@
                     </tbody>
                 </table>
             </div>
-
-            @if($fines->count() > 0)
-                <div class="p-4 border-t border-base-300 flex justify-end">
-                    <div class="text-sm text-base-content/60">
-                        Total Denda: <span class="font-semibold text-error text-base">
-                            Rp {{ number_format($fines->sum('total_fines'), 0, ',', '.') }}
-                        </span>
-                    </div>
+            {{-- Table Riwayat Denda --}}
+            <div class="card bg-base-100 shadow border border-base-300">
+                <div class="overflow-x-auto">
+                    <table class="table table-zebra text-sm">
+                    </table>
                 </div>
-            @endif
+                
+                {{-- Tambahkan Pagination Controls Di Sini --}}
+                <div class="p-4 border-t border-base-300">
+                    {{ $fines->links() }}
+                </div>
+            </div>
         </div>
 
     </div>
 
-
-    {{-- Modal Pembayaran Denda --}}
+    {{-- Modal Pembayaran Denda (KODE LAMA, TIDAK DIUBAH) --}}
     <flux:modal name="payment-modal" class="min-w-[28rem]">
 
     
@@ -160,7 +202,7 @@
                     </div>
                 </div>
 
-                {{-- Tampilan Informasi Lengkap Peminjam (Tetap muncul di Cash & Cashless) --}}
+                {{-- Tampilan Informasi Lengkap Peminjam --}}
                 @if($member_api_data)
                     <div class="p-4 border border-primary/20 rounded-xl bg-primary/5 flex items-center gap-4">
                         @if(!empty($member_api_data['foto']))

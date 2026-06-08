@@ -4,65 +4,59 @@ namespace App\Livewire\Loans;
 
 use Livewire\Component;
 use App\Models\Loan;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use App\Models\Book;
+use App\Traits\WithToast;
+use Livewire\WithPagination;
+use Flux\Flux;
 
 class Lost extends Component
 {
-    public function render()
+    use WithToast, WithPagination;
+
+    public $selectedLoanId = null;
+    public $selectedBookTitle = '';
+
+    public function confirmMarkAsAvailable($loanId)
     {
-        // Ambil data peminjaman dengan status hilang
-        $lostLoans = Loan::with(['member', 'fines'])
+        $loan = Loan::findOrFail($loanId);
+        $this->selectedLoanId = $loan->id;
+        $this->selectedBookTitle = $loan->book_title;
+        Flux::modal('confirm-available-modal')->show();
+    }
+
+    public function processMarkAsAvailable()
+    {
+        if ($this->selectedLoanId) {
+            $this->markAsAvailable($this->selectedLoanId);
+            $this->reset(['selectedLoanId', 'selectedBookTitle']);
+            Flux::modal('confirm-available-modal')->close();
+        }
+    }
+
+    /**
+     * Fungsi untuk mengubah status buku kembali menjadi tersedia
+     * saat buku yang hilang sudah diganti dengan buku fisik yang baru.
+     */
+    public function markAsAvailable($loanId)
+    {
+        $loan = Loan::findOrFail($loanId);
+
+        // 1. Update status buku di database lokal kembali menjadi tersedia
+        Book::where('book_code', $loan->book_code)->update(['status' => 'tersedia']);
+
+        // 2. Gunakan 'kembali' karena 'diganti' tidak dikenali oleh ENUM database.
+        // Ini akan menyelesaikan transaksi pinjaman dan menghilangkannya dari halaman ini.
+        $loan->update(['status' => 'kembali']);
+
+        $this->toast('Status buku berhasil dikembalikan menjadi Tersedia.', 'success');
+    }
+   public function render()
+    {
+        // Gunakan paginate() alih-alih get()
+        $lostLoans = Loan::with('fines')
             ->where('status', 'hilang')
             ->latest()
-            ->get();
-
-        // Tarik data API untuk mendapatkan Nama Peminjam
-        $apiMembers = collect();
-        try {
-            $response = Http::withToken(config('services.ibs_api.token'))
-                            ->timeout(15)
-                            ->get(config('services.ibs_api.url') . 'master-simpanans', [
-                                'per_page' => 5000, 
-                                'limit'    => 5000
-                            ]);
-
-            if ($response->successful()) {
-                $dataArray = $response->json('data.data') ?? [];
-                if (empty($dataArray) && !empty($response->json('data'))) {
-                     $dataArray = $response->json('data'); 
-                     if (isset($dataArray['data'])) $dataArray = $dataArray['data'];
-                }
-                
-                // Mapping by RFID integer
-                $apiMembers = collect($dataArray)->keyBy(function ($item) {
-                    return (int) ($item['rfid_code'] ?? 0);
-                });
-            }
-        } catch (\Exception $e) {
-            Log::warning('[Lost] Gagal meload nama API untuk tabel: ' . $e->getMessage());
-        }
-
-        // Proses pencocokan nama
-        foreach ($lostLoans as $loan) {
-            $rfid = $loan->member->rfid_code ?? null;
-            $apiData = $apiMembers->get((int) $rfid);
-
-            if ($apiData) {
-                $nasabah       = $apiData['nasabah'] ?? [];
-                $detailSantri  = $nasabah['detail_santri'] ?? [];
-                $detailPegawai = $nasabah['detail_pegawai'] ?? [];
-                $isSantri      = strtolower($nasabah['jenis_nasabah']['nama_komponen'] ?? '') === 'santri';
-                
-                $nama = $isSantri
-                    ? ($detailSantri['nama_lengkap'] ?? ($nasabah['nama'] ?? '-'))
-                    : ($detailPegawai['nama_pegawai'] ?? ($nasabah['nama'] ?? '-'));
-                
-                $loan->api_nama = $nama;
-            } else {
-                $loan->api_nama = 'RFID: ' . ($rfid ?? 'Tidak Dikenal');
-            }
-        }
+            ->paginate(10); // Ubah get() menjadi paginate(10)
 
         return view('livewire.loans.lost', [
             'lostLoans' => $lostLoans

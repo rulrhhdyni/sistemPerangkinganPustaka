@@ -132,6 +132,23 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+        'slims' => [
+            'driver' => 'mysql',
+            'url' => env('SLIMS_DB_URL'),
+            'host' => env('SLIMS_DB_HOST', '127.0.0.1'),
+            'port' => env('SLIMS_DB_PORT', '3306'),
+            'database' => env('SLIMS_DB_DATABASE', 'bulian'), // Sesuaikan nama DB
+            'username' => env('SLIMS_DB_USERNAME', 'root'),
+            'password' => env('SLIMS_DB_PASSWORD', ''),
+            'unix_socket' => env('SLIMS_DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+        ],
+
     ],
 
     /*

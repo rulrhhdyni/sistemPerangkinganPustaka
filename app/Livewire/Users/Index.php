@@ -62,6 +62,6 @@ class Index extends Component
     public function render()
     {
         $users = $this->query();
-        return view('livewire.users.index', compact('users'));
+        return view('livewire.users.index', compact('users'))->title('Data Pengguna');
     }
 }

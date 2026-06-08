@@ -22,9 +22,13 @@ Route::get('/force-logout', function() {
 });
 
 Route::middleware('web')->post('/rfid-absensi', function (\Illuminate\Http\Request $request) {
-    $rfid = $request->input('rfid');
+    $rfid = trim($request->input('rfid'));
     
-    // Cek apakah admin
+    if (empty($rfid)) {
+        return response()->json(['type' => 'unknown']);
+    }
+
+    // 1. Cek apakah admin
     $user = \App\Models\User::where('rfid_id', $rfid)->first();
     if ($user) {
         \Illuminate\Support\Facades\Auth::login($user, true);
@@ -32,23 +36,35 @@ Route::middleware('web')->post('/rfid-absensi', function (\Illuminate\Http\Reque
         return response()->json(['type' => 'admin', 'redirect' => '/dashboard']);
     }
     
-        // Cek apakah member/santri
-    $rfid = trim($request->rfid);
+    // 2. Cek apakah member/santri
     $member = \App\Models\Member::where('rfid_code', $rfid)->first();
 
     if ($member) {
-        // 1. Ambil data nama dan kontak dari database lokal yang sudah tersinkronisasi
+        $today = now()->toDateString();
+
+        // PENGECEKAN ABSENSI: Apakah sudah absen hari ini?
+        $sudahAbsen = \App\Models\Visit::where('member_id', $member->id)
+                                       ->whereDate('visit_date', $today)
+                                       ->exists();
+
+        if ($sudahAbsen) {
+            return response()->json([
+                'type' => 'already_scanned', 
+                'message' => 'Maaf, Anda sudah melakukan absensi hari ini.'
+            ]);
+        }
+
+        // Jika belum absen, lanjut simpan
         $memberName = $member->display_name;
         $memberPhone = $member->display_phone;
 
-        // 2. Simpan kunjungan dengan data lokal
         \App\Models\Visit::create([
             'member_id'      => $member->id,
             'guest_name'     => $memberName,
             'guest_phone'    => $memberPhone,
-            'guest_identity' => $member->id_server, // Menggunakan id_server sebagai identitas
+            'guest_identity' => $member->id_server,
             'visit_type'     => 'member',
-            'visit_date'     => now()->toDateString(),
+            'visit_date'     => $today,
             'visit_time'     => now()->toTimeString(),
         ]);
 
@@ -56,8 +72,8 @@ Route::middleware('web')->post('/rfid-absensi', function (\Illuminate\Http\Reque
         return response()->json(['type' => 'member', 'name' => $memberName]);
     }
         
-        return response()->json(['type' => 'unknown']);
-    })->name('rfid.absensi');
+    return response()->json(['type' => 'unknown']);
+})->name('rfid.absensi');
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth'])
@@ -75,8 +91,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/fines', \App\Livewire\Loans\Fines::class)->name('fine.index');
     Route::post('/fines/{fine}/pay', [CirculationController::class, 'payFine'])->name('fine.pay');
     // Bebas Pustaka
-    Route::get('/clearance', [CirculationController::class, 'clearance'])->name('clearance.index');
-    Route::get('/clearance/{id}', [CirculationController::class, 'checkClearance'])->name('clearance.check');
+    // Route::get('/clearance', [CirculationController::class, 'clearance'])->name('clearance.index');
+    // Route::get('/clearance/{id}', [CirculationController::class, 'checkClearance'])->name('clearance.check');
 
     // --- FITUR SIRKULASI (Peminjaman, Pengembalian, Perpanjangan) ---
     // Route::prefix('loans')->group(function () {
@@ -86,7 +102,9 @@ Route::middleware(['auth'])->group(function () {
     // });
 
     // --- FITUR SURAT BEBAS PUSTAKA ---
-    Route::get('/clearance/{member_id}', [CirculationController::class, 'generateBebasPustaka'])->name('loan.clearance');
+    // Route::get('/clearance/{member_id}', [CirculationController::class, 'generateBebasPustaka'])->name('loan.clearance');
+
+    Route::get('/clearance', \App\Livewire\Loans\Clearance::class)->name('clearance.index');
 
     Route::redirect('settings', 'settings/profile');
 

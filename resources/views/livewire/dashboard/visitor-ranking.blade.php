@@ -46,10 +46,12 @@
                     {{-- NAME --}}
                     <div>
                         <p class="font-semibold text-md truncate">
-                            {{ $row->guest_name ?? 'Guest Tidak Dikenal' }}
+                            {{-- Memanggil api_nama terlebih dahulu --}}
+                            {{ $row->api_nama ?? $row->guest_name ?? 'Guest Tidak Dikenal' }}
                         </p>
                         <p class="text-xs opacity-60">
-                            {{ $row->guest_identity ?? '-' }}
+                            {{-- Memanggil api_identitas terlebih dahulu --}}
+                            {{ $row->api_identitas ?? $row->guest_identity ?? '-' }}
                         </p>
                     </div>
 

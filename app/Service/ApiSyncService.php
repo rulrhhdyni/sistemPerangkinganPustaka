@@ -43,13 +43,13 @@ class ApiSyncService
                  if (isset($apiData['data'])) $apiData = $apiData['data'];
             }
 
-            // Proteksi: Jika API merespon sukses tapi data kosong, cegah penghapusan massal
             if (empty($apiData)) {
                 return ['synced' => 0, 'failed' => false, 'message' => 'Data dari server pusat kosong.'];
             }
 
-            // 2. Ambil data lokal saat ini (Sebagai pembanding)
-            $localMembers = Member::select('id', 'rfid_code', 'type')
+            // 2. Ambil data lokal (HANYA Santri dan Pegawai agar Admin/Guest manual tidak ikut terhapus)
+            $localMembers = Member::whereIn('type', ['Santri', 'Pegawai'])
+                                  ->select('id', 'rfid_code', 'type')
                                   ->get()
                                   ->keyBy('rfid_code');
 
@@ -59,14 +59,24 @@ class ApiSyncService
 
             // 3. Pilah mana data BARU dan mana data BERUBAH
             foreach ($apiData as $item) {
-                $rfid = $item['rfid_code'] ?? null;
-                if (!$rfid) continue;
-
-                $rfidDariApi[] = $rfid; // Catat RFID yang ada di server
+                // Pastikan RFID berupa string dan tidak ada spasi tersembunyi
+                $rfid = trim((string) ($item['rfid_code'] ?? ''));
+                if ($rfid === '') continue;
 
                 $nasabah = $item['nasabah'] ?? [];
-                $jenis = strtolower($nasabah['jenis_nasabah']['nama_komponen'] ?? '');
-                $type = $jenis === 'santri' ? 'Santri' : ($jenis === 'pegawai' ? 'Pegawai' : 'Lainnya');
+                $jenisNasabah = $nasabah['jenis_nasabah'] ?? [];
+                
+                // FILTER: Hanya ambil kode 01 dan 02
+                $kodeJenis = $jenisNasabah['kode'] ?? '';
+                if (!in_array($kodeJenis, ['01', '02'])) {
+                    continue;
+                }
+
+                $rfidDariApi[] = $rfid; // Catat RFID yang valid dari server
+
+                // Normalisasi penamaan tipe (Mencegah false-update karena huruf besar/kecil)
+                $namaKomponen = strtolower($jenisNasabah['nama_komponen'] ?? '');
+                $type = str_contains($namaKomponen, 'santri') ? 'Santri' : 'Pegawai';
 
                 if (!$localMembers->has($rfid)) {
                     // Jika RFID tidak ada di lokal -> TAMBAH DATA BARU
@@ -77,7 +87,7 @@ class ApiSyncService
                         'updated_at' => now(),
                     ];
                 } else {
-                    // Jika RFID ada di lokal, periksa apakah tipe-nya berubah?
+                    // Jika RFID ada di lokal, periksa apakah tipe-nya berubah
                     $local = $localMembers->get($rfid);
                     if ($local->type !== $type) {
                         $toUpdate[] = [
@@ -88,6 +98,9 @@ class ApiSyncService
                     }
                 }
             }
+
+            // Hapus duplikasi RFID di memori jika API mengembalikan data ganda
+            $rfidDariApi = array_unique($rfidDariApi);
 
             // 4. Cari data yang DIHAPUS (Ada di lokal, tapi tidak ada di API)
             $rfidToDelete = $localMembers->keys()->diff($rfidDariApi)->toArray();

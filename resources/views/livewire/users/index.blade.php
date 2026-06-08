@@ -36,6 +36,7 @@
                             <th>#</th>
                             <th>Nama Pengguna</th>
                             <th>Email Pengguna</th>
+                            <th>RFID</th> {{-- Tambahan Header RFID --}}
                             <th>Is Admin</th>
                             <th>Action</th>
                         </tr>
@@ -47,16 +48,16 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td class="font-medium">{{ $user->name }}</td>
                                 <td class="font-medium">{{ $user->email }}</td>
+                                <td>{{ $user->rfid_id }}</td> {{-- Tambahan Data RFID --}}
                                 <td>{{ $user->is_admin ? 'Yes' : 'No' }}</td>
                                 <td class="text-center space-x-1">
                                     <button wire:click="edit({{ $user->id }})" class="btn btn-xs btn-warning">
                                         Edit
-                                        </b>
-
-                                        <button wire:click="openDelete({{ $user->id }})"
-                                            class="btn btn-xs btn-error">
-                                            Delete
-                                        </button>
+                                    </button>
+                                    <button wire:click="openDelete({{ $user->id }})"
+                                        class="btn btn-xs btn-error">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         @empty

@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Sistem Kehadiran Perpustakaan Al-Ihsan</title>
+    <link rel="icon" href="/images/logo.png" type="image/png">
+    <title>Perpustakaan Al-Ihsan Riau</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @fluxAppearance
     <style>
@@ -188,15 +189,16 @@
             <div class="flex justify-center mb-4">
                 <div class="bg-red-100 text-red-600 rounded-full w-20 h-20 flex items-center justify-center text-4xl shadow-inner">❌</div>
             </div>
-            <h3 class="text-center text-2xl font-black text-red-700 mb-1">Kartu Tidak Dikenal</h3>
-            <p class="text-center text-sm text-slate-500 font-medium">Kartu RFID belum terdaftar dalam sistem. Silakan laporkan ke petugas perpustakaan.</p>
+            <h3 class="text-center text-2xl font-black text-red-700 mb-1">Absensi Gagal</h3>
+            {{-- Tambahkan id="error-desc" agar pesannya bisa diubah JS --}}
+            <p id="error-desc" class="text-center text-sm text-slate-500 font-medium">Kartu RFID belum terdaftar dalam sistem. Silakan laporkan ke petugas perpustakaan.</p>
         </div>
     </dialog>
 
     @fluxScripts
 
     <script>
-        // Logika JS tidak diubah sama sekali
+        // Logika JS
         let rfidBuffer = '';
         let rfidTimeout = null;
         document.addEventListener('keydown', function(e) {
@@ -250,7 +252,6 @@
                 body: JSON.stringify({ rfid: rfid })
             })
             .then(async res => {
-                // Cek jika server mengembalikan error (misal 500 Internal Server Error)
                 if (!res.ok) {
                     const errorText = await res.text();
                     throw new Error(`Server Error (${res.status}): ${errorText}`);
@@ -266,20 +267,31 @@
                     setTimeout(() => setStatus('⏳ Menunggu kartu RFID...', 'default'), 4000);
                     const modal = document.getElementById('welcome_modal');
                     if (modal) { modal.showModal(); setTimeout(() => modal.close(), 5000); }
+                } else if (data.type === 'already_scanned') {
+                    // Penanganan saat sudah absen
+                    setStatus('❌ ' + data.message, 'error');
+                    setTimeout(() => setStatus('⏳ Menunggu kartu RFID...', 'default'), 4000);
+                    const errorDesc = document.getElementById('error-desc');
+                    if (errorDesc) errorDesc.textContent = data.message;
+                    const modal = document.getElementById('barcode_gagal');
+                    if (modal) { modal.showModal(); setTimeout(() => modal.close(), 5000); }
                 } else {
+                    // Penanganan kartu tidak terdaftar
                     setStatus('❌ Kartu tidak dikenal!', 'error');
                     setTimeout(() => setStatus('⏳ Menunggu kartu RFID...', 'default'), 4000);
+                    const errorDesc = document.getElementById('error-desc');
+                    if (errorDesc) errorDesc.textContent = 'Kartu RFID belum terdaftar dalam sistem. Silakan laporkan ke petugas perpustakaan.';
                     const modal = document.getElementById('barcode_gagal');
                     if (modal) { modal.showModal(); setTimeout(() => modal.close(), 5000); }
                 }
             })
             .catch(err => {
-                // TAMPILKAN ERROR DI CONSOLE
                 console.error('RFID Process Error:', err);
                 setStatus('❌ Kesalahan: ' + err.message.substring(0, 20) + '...', 'error');
                 setTimeout(() => setStatus('⏳ Menunggu kartu RFID...', 'default'), 4000);
                 
-                // Opsional: Tampilkan modal error jika ingin lebih terlihat
+                const errorDesc = document.getElementById('error-desc');
+                if (errorDesc) errorDesc.textContent = 'Terjadi kesalahan sistem saat memproses RFID.';
                 const modal = document.getElementById('barcode_gagal');
                 if (modal) { modal.showModal(); }
             });
